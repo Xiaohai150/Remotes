@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <!-- maximum-scale=1, user-scalable=no"  在移动端禁止用户缩放 -- 只能滚动 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1, user-scalable=no">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>报名系统</title>
+    <!-- 引用Bootstarp的css -->
+    <link rel="stylesheet" href="public/Bootstarp/css/bootstrap.css">
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+        }
+        
+        .content {
+            border: 1px solid #ccc;
+            height: 488px;
+            border-radius: 2%;
+            padding: 12px 8px;
+            background: white;
+            position: relative;
+        }
+        
+        .Form>div {
+            border-bottom: 1px solid #ccc;
+            height: 38px;
+            line-height: 38px;
+        }
+        
+        .Form input,
+        .Form select {
+            /* outline 选中时候不显示蓝框  */
+            outline: none;
+            height: 37px;
+            width: 77%;
+            padding-left: 6px;
+            border: none;
+        }
+        
+        .Form select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+        
+        .Form select option {
+            height: 58px;
+        }
+        
+        .online {
+            display: inline-block;
+            width: 100%;
+            background: #f0f0f0;
+            height: 128px;
+            line-height: 128px;
+            font-size: 22px;
+            text-align: center;
+            color: green;
+            font-weight: 600;
+        }
+        
+        .Submit {
+            background: green;
+            color: white;
+            margin-top: 6px;
+            border-radius: 8px;
+        }
+        
+        .Flag {
+            position: relative;
+        }
+        
+        .Flag span {
+            position: absolute;
+            top: 12px;
+            right: 24px;
+            /* 将Icon设置为不可交互的状态 */
+            pointer-events: none;
+        }
+        
+        .rotate {
+            transform: rotate(90deg);
+        }
+        
+        .DefaultStyle {
+            position: absolute;
+            top: 37px;
+            left: 88px;
+            width: 77%;
+            border: 1px solid #ccc;
+            box-shadow: black;
+            display: none;
+        }
+        
+        .DefaultStyle a {
+            display: block;
+            width: 100%;
+            height: 38px;
+            background: white;
+            line-height: 38px;
+            border-bottom: 1px solid #ccc;
+            color: black;
+            padding-left: 8px;
+        }
+        
+        .Zindex {
+            z-index: 5;
+        }
+        
+        .DefaultStyle a:hover {
+            text-decoration: none;
+            background: #ccc;
+        }
+
+        
+        .AuthCode input {
+            width: 42%;
+        }
+        .fixedhint{
+            display: block;
+            position: absolute;
+            top: 20px;
+            width: 100%;
+            text-align: center;
+            color: red;
+            font-size: 18px;
+            font-weight: 600;
+            display: none;
+        }
+    </style>
+    <script src="public/Jquery/jquery-1.10.1.js"></script>
+    <script src="public/Bootstarp/js/bootstrap.js"></script>
+    <script>
+        $(function() {
+            $(".Submit").css("width", "100%").css("height", "38px");
+            //当即输入款的时候
+            $(".Flag>input").click(function() {
+                    // 切换 旋转 图标 Icon
+                    $(this).siblings("span").toggleClass("rotate");
+                    // 以滑动方式显示出来
+                    $(this).siblings(".DefaultStyle").slideToggle(300);
+
+                })
+
+                // 单击a链接的时候
+            $(".Flag>.DefaultStyle>a").click(function() {
+                    // 修改input款的值
+                    $(this).parent().siblings("input").val($(this).html());
+                    //删除input的 优先级
+                    $(this).parent().siblings("input").removeClass("Zindex");
+                    return false;
+        })
+                // input失去焦点的时候
+            $(".Flag>input").blur(function() {
+                    // 将图标便会远洋
+                    $(this).siblings("span").removeClass("rotate");
+                    // 收起
+                    $(this).siblings(".DefaultStyle").slideUp(300);
+                })
+                // input获取焦点的时候
+            $(".Flag>input").focus(function() {
+                // 添加优先级
+                $(this).siblings(".DefaultStyle").addClass("Zindex");
+            })
+
+            // 提交按钮得单击事件
+            $(".Submit").click(function() {
+                function fades() {     // 渐隐渐现方法
+                    var fixed =  $(".fixedhint") ;
+                    fixed.fadeIn(500).delay(500).fadeOut(500);
+                }
+                function changvalue(str) {   // 修改值得方法
+                    var fixed =  $(".fixedhint") ;
+                    fixed.html(str);
+                }
+                // 必须是 字符 ， 而不是 字符串
+                var re = /^[\W]{1,4}$/;
+                // 姓名正则
+                if (!re.test($(".Name>input").val())) {
+
+                    if($(".Name>input").val().trim() == ""){
+                        changvalue("姓名不能为空");
+                        fades();
+                        return false ;
+                    }
+                    changvalue("姓名错误");
+                    fades();
+                    return false;
+                }
+                re = /^1([38][0-9]|4[579]|5[0-3,5-9]|6[6]|7[0135678]|9[89])\d{8}$/;
+                if (!re.test($(".tel>input").val())) {
+                    if($(".tel>input").val().trim() == ""){
+                        changvalue("号码不能为空");
+                        fades();
+                        return false ;
+                    }
+                    changvalue("号码错误") ;
+                    fades();
+                    return false;
+                }
+                re = /[\da-z]{4}/i;
+                if(!re.test($(".AuthCode>input").val().trim())){
+                    if($(".AuthCode>input").val().trim() == ""){
+                        changvalue("验证码不能为空");
+                        fades();
+                        return false ;
+                    }
+                    changvalue("验证码错误");
+                    fades();
+                }
+                return false;
+        })
+        })
+    </script>
+</head>
+
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="content col-xs-10 col-xs-offset-1 col-sm-7 col-sm-offset-5 col-md-5 col-lg-5 col-lg-offset-7">
+                <span class="online">XX驾校在线报名</span>
+                <span class="fixedhint">我是span</span>
+                <form action="#" method="POST" class="Form">
+                    <div class="Name">
+                        <label for="Nameinput">姓　　　名：</label>
+                        <input type="text" placeholder="姓名" id="Nameinput">
+                    </div>
+                    <div class="tel">
+                        <label for="Telinput">手　机　号：</label>
+                        <input type="tel" placeholder="手机号" id="Telinput">
+                    </div>
+                    <div class="Flag">
+                        <label for="">性　　　别：</label>
+                        <input type="text" placeholder="性别" readonly value="男" id="SexSelect">
+                        <div class="DefaultStyle" >
+                        <a href="#">男</a>
+                        <a href="#">女</a>
+                    </div>
+                        <span class="glyphicon glyphicon-menu-right " aria-hidden="true"></span>
+                    </div>
+
+                    <!-- <div class=" GroupNum">
+                        <label for="">团　　　号：</label>
+                        <input type="tel" placeholder="团号">
+                    </div> -->
+
+                    <div class="Flag">
+                        <label for="">单　　　位：</label>
+                        <!-- <input type="text" placeholder="报名类型"> -->
+                        <input type="text" placeholder="单位" readonly value="江西制造职业技术学院">
+                        <div class="DefaultStyle">
+                            <a href="#">江西制造职业技术学院</a>
+                        </div>
+                        <span class="glyphicon glyphicon-menu-right " aria-hidden="true"></span>
+                    </div>
+                    <div class="AuthCode">
+                        <label for="AuthCode" >验　证　码：</label>
+                        <input type="text" placeholder="验证码" id="AuthCode">
+                        <img src="images/AuthCode.jpg" alt="">
+                    </div>
+                    <input type="submit" class="Submit">
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
